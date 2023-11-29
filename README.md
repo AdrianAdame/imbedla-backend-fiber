@@ -8,7 +8,7 @@ The application will allow the users to distribute their houseplants and gardens
 
 GitHub URL:
 
-- [Frontend](https://github.com/AdrianAdame/imbedla-frontend-react)
+- [Frontend](https://github.com/AdrianAdame/imbedla-backend-fiber)
 
 - [Backend](https://github.com/AdrianAdame/imbedla-backend-fiber)
 
