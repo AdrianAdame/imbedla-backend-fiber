@@ -12,6 +12,9 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
     updated_at TIMESTAMP NULL,
     email VARCHAR (255) NOT NULL UNIQUE,
+    firstname VARCHAR (255) NOT NULL UNIQUE,
+    lastname VARCHAR (255) NOT NULL UNIQUE,
+    about VARCHAR (255) NOT NULL UNIQUE,
     password_hash VARCHAR (255) NOT NULL,
     user_status INT NOT NULL,
     user_role VARCHAR (25) NOT NULL

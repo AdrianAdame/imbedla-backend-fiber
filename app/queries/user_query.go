@@ -1,8 +1,6 @@
 package queries
 
 import (
-	"fmt"
-
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -37,16 +35,13 @@ func (q *UserQueries) GetUserByEmail(email string) (models.User, error) {
 // CreateUser query for creating a new user by given email and password hash.
 func (q *UserQueries) CreateUser(u *models.User) error {
 	// Define query string.
-
-	fmt.Println(u)
-	query := `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	query := `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	// Send query to database.
 	_, err := q.Exec(
-		query,
-		u.ID, u.CreatedAt, u.UpdatedAt, u.Email, u.PasswordHash, u.UserStatus, u.UserRole,
+		query, 
+		u.ID, u.CreatedAt, u.UpdatedAt, u.Email, u.Firstname, u.Lastname, "_blank", u.PasswordHash, u.UserStatus, u.UserRole,
 	)
-	fmt.Println(err)
 
 	if err != nil {
 		// Return only error.

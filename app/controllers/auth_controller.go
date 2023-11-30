@@ -15,6 +15,8 @@ func UserSignUp(c *fiber.Ctx) error {
 	// Create a new user auth struct
 	signUp := &models.SignUp{}
 
+	signUp.Role = "user"
+
 	// Checking received data from JSON body.
 	if err := c.BodyParser(signUp); err != nil {
 		// Return status 400 and error message.
@@ -62,7 +64,11 @@ func UserSignUp(c *fiber.Ctx) error {
 
 	user.ID = uuid.New()
 	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
 	user.Email = signUp.Email
+	user.Firstname = signUp.Firstname
+	user.Lastname = signUp.Lastname
+	user.About = signUp.About
 	user.PasswordHash = utils.GeneratePassword(signUp.Password)
 	user.UserStatus = 1 // 0 == blocked, 1 == activate
 	user.UserRole = role
