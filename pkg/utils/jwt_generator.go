@@ -20,6 +20,8 @@ type Tokens struct {
 func GenerateNewToken(id string, credentials []string) (*Tokens, error) {
 	accessToken, err := generateNewAccessToken(id, credentials)
 
+	fmt.Println(accessToken)
+
 	if err != nil {
 		return nil, err
 	}
@@ -45,17 +47,20 @@ func generateNewAccessToken(id string, credentials []string) (string, error) {
 	claims["id"] = id
 	claims["expires"] = time.Now().Add(time.Minute * time.Duration(minutesCount)).Unix()
 
-	for _, credential := range credentials {
-		claims[credential] = true
-	}
+	// for _, credential := range credentials {
+	// 	claims[credential] = true
+	// }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	fmt.Println(secret)
 
 	t, err := token.SignedString([]byte(secret))
 
 	if err != nil {
 		return "", err
 	}
+
 	return t, nil
 }
 

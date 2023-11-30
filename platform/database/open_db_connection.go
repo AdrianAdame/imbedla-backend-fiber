@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/queries"
@@ -23,8 +22,6 @@ func OpenDBConnection() (*Queries, error) {
 	)
 
 	dbType := os.Getenv("DB_TYPE")
-
-	fmt.Println(dbType)
 
 	switch dbType {
 	case "pgx":

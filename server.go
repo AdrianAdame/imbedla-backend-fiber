@@ -5,9 +5,12 @@ import (
 	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/middleware"
 	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load()
+
 	config := configs.FiberConfig()
 	app := fiber.New(config)
 

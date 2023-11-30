@@ -8,6 +8,8 @@ import (
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/utils"
 	"github.com/jmoiron/sqlx"
+
+	_ "github.com/jackc/pgx/v4/stdlib" // load pgx driver for PostgreSQL
 )
 
 func PostgresSQLConnection() (*sqlx.DB, error) {

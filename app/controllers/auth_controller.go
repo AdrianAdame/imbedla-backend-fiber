@@ -47,7 +47,6 @@ func UserSignUp(c *fiber.Ctx) error {
 			"msg":   err.Error(),
 		})
 	}
-	fmt.Println(db)
 
 	// Checking role from sign up data.
 	role, err := utils.VerifyRole(signUp.Role)
@@ -75,7 +74,6 @@ func UserSignUp(c *fiber.Ctx) error {
 
 	// Validate user fields
 	if err := validate.Struct(user); err != nil {
-		fmt.Println(err)
 		// Return, if some fields are not valid
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": true,
@@ -98,20 +96,20 @@ func UserSignUp(c *fiber.Ctx) error {
 	// Return status 200 OK.
 	return c.JSON(fiber.Map{
 		"error": false,
-		"msg":   nil,
+		"msg":   "registered",
 		"user":  user,
 	})
 }
 
 func UserSignIn(c *fiber.Ctx) error {
 	// Create a new user Auth struct
-	signIn := models.SignIn{}
+	signIn := &models.SignIn{}
 
 	// Checking received data from JSON body
 	if err := c.BodyParser(signIn); err != nil {
 		// Return status 400 and error message
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
+			"error1": true,
 			"msg":   err.Error(),
 		})
 	}
@@ -121,7 +119,7 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err != nil {
 		// Return status 500 and database error.
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
+			"error2": true,
 			"msg":   err.Error(),
 		})
 	}
@@ -131,16 +129,17 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err != nil {
 		// Return status 500 and database error.
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": true,
+			"error3": true,
 			"msg":   "user with the given email is not found",
 		})
 	}
+
 	// compare given user password with stored in found user
-	compareUserPassword := utils.ComparePasswords(foundedUser.PasswordHash, signIn.Email)
+	compareUserPassword := utils.ComparePasswords(foundedUser.PasswordHash, signIn.Password)
 	if !compareUserPassword {
 		// Return , if  passwordis not compare to stored in db
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
+			"error4": true,
 			"msg":   "wrong user email address or password",
 		})
 	}
@@ -150,24 +149,26 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err != nil {
 		// Return status 400 and error message
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
+			"error5": true,
 			"msg":   err.Error(),
 		})
 	}
+
+	fmt.Println(credentials)
 
 	// Generate a new pair of access and refresh tokens.
 	tokens, err := utils.GenerateNewToken(foundedUser.ID.String(), credentials)
 	if err != nil {
 		// Return 500 and token generation error
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
+			"error6": true,
 			"msg":   err.Error(),
 		})
 	}
 
 	// Return status 200 OK
 	return c.JSON(fiber.Map{
-		"error": false,
+		"error7": false,
 		"msg":   nil,
 		"tokens": fiber.Map{
 			"access":  tokens.Access,
