@@ -14,5 +14,9 @@ func PublicRoutes(a *fiber.App) {
 
 	// Routes for POST method:
 	route.Post("/auth/register", controllers.UserSignUp) // register a new user
-	route.Post("/auth/sign", controllers.UserSignIn) // auth, return Access & Refresh tokens
+	route.Post("/auth/sign", controllers.UserSignIn)     // auth, return Access & Refresh tokens
+
+	route.Get("/test1", func(c *fiber.Ctx) error {
+		return c.SendString("is hot reloading")
+	})
 }
