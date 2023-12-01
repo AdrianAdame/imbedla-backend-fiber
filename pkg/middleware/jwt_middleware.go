@@ -26,7 +26,7 @@ func jwtError(c *fiber.Ctx, err error) error {
 		})
 	}
 
-	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 		"error": true,
 		"msg":   err.Error(),
 	})

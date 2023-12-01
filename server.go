@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 45eeb125ff0ffdbd88d228b7e737a5895a65a89c
 	godotenv.Load()
 
 	config := configs.FiberConfig()
