@@ -1,7 +1,6 @@
 package queries
 
 import (
-
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -40,7 +39,7 @@ func (q *UserQueries) CreateUser(u *models.User) error {
 
 	// Send query to database.
 	_, err := q.Exec(
-		query, 
+		query,
 		u.ID, u.CreatedAt, u.UpdatedAt, u.Email, u.Firstname, u.Lastname, u.About, u.PasswordHash, u.UserStatus, u.UserRole,
 	)
 

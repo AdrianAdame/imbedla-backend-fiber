@@ -22,3 +22,12 @@ CREATE TABLE users (
 
 -- Add indexes
 CREATE INDEX active_users ON users (id) WHERE user_status = 1;
+
+--- Tokens Table
+CREATE TABLE tokens (
+    token_id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
+    id UUID REFERENCES users(id),
+    access_token VARCHAR(255) DEFAULT NULL,
+    refresh_token VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
