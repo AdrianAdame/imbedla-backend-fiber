@@ -6,13 +6,9 @@ import (
 	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"github.com/qinains/fastergoding"
 )
 
 func main() {
-
-	fastergoding.Run() //� add this code
-
 	godotenv.Load()
 
 	config := configs.FiberConfig()

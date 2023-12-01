@@ -7,7 +7,7 @@ func NotFoundRoute(a *fiber.App) {
 		func(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": true,
-				"mgs":  "Endpoint not found in API definition.",
+				"msg":  "Endpoint not found in API definition.",
 			})
 		},
 	)
