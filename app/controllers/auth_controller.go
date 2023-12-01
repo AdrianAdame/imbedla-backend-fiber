@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
@@ -109,7 +108,7 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err := c.BodyParser(signIn); err != nil {
 		// Return status 400 and error message
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error1": true,
+			"error": true,
 			"msg":   err.Error(),
 		})
 	}
@@ -119,7 +118,7 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err != nil {
 		// Return status 500 and database error.
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error2": true,
+			"error": true,
 			"msg":   err.Error(),
 		})
 	}
@@ -129,7 +128,7 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err != nil {
 		// Return status 500 and database error.
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error3": true,
+			"error": true,
 			"msg":   "user with the given email is not found",
 		})
 	}
@@ -139,7 +138,7 @@ func UserSignIn(c *fiber.Ctx) error {
 	if !compareUserPassword {
 		// Return , if  passwordis not compare to stored in db
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error4": true,
+			"error": true,
 			"msg":   "wrong user email address or password",
 		})
 	}
@@ -149,26 +148,39 @@ func UserSignIn(c *fiber.Ctx) error {
 	if err != nil {
 		// Return status 400 and error message
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error5": true,
+			"error": true,
 			"msg":   err.Error(),
 		})
 	}
-
-	fmt.Println(credentials)
 
 	// Generate a new pair of access and refresh tokens.
 	tokens, err := utils.GenerateNewToken(foundedUser.ID.String(), credentials)
 	if err != nil {
 		// Return 500 and token generation error
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error6": true,
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	resToken := &models.Tokens{}
+
+	resToken.TokenID = uuid.New()
+	resToken.UserID = foundedUser.ID
+	resToken.Access = tokens.Access
+	resToken.Refresh = tokens.Refresh
+	resToken.CreatedAt = time.Now()
+
+	if err := db.CreateTokens(resToken); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
 			"msg":   err.Error(),
 		})
 	}
 
 	// Return status 200 OK
 	return c.JSON(fiber.Map{
-		"error7": false,
+		"error": false,
 		"msg":   nil,
 		"tokens": fiber.Map{
 			"access":  tokens.Access,
@@ -178,8 +190,10 @@ func UserSignIn(c *fiber.Ctx) error {
 }
 
 func UserSignOut(c *fiber.Ctx) error {
+
 	// Get claims from JWT
 	claims, err := utils.ExtractTokenMetadata(c)
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
@@ -187,7 +201,25 @@ func UserSignOut(c *fiber.Ctx) error {
 		})
 	}
 
-	fmt.Print(claims.UserID)
+	token := &models.Tokens{}
+
+	token.UserID = claims.UserID
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		// Return status 500 and database error.
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	if err := db.DeleteTokens(token); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
 
 	// Return status 204 no content.
 	return c.SendStatus(fiber.StatusNoContent)

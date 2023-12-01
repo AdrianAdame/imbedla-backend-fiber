@@ -12,11 +12,12 @@ func PublicRoutes(a *fiber.App) {
 		return c.SendString("Hello")
 	})
 
+	// Temp
+
+	route.Post("/auth/logout", controllers.UserSignOut) // de-authorization user
+
 	// Routes for POST method:
 	route.Post("/auth/register", controllers.UserSignUp) // register a new user
 	route.Post("/auth/sign", controllers.UserSignIn)     // auth, return Access & Refresh tokens
 
-	route.Get("/test1", func(c *fiber.Ctx) error {
-		return c.SendString("is hot reloading")
-	})
 }

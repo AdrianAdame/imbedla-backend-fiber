@@ -16,7 +16,9 @@ type TokenMetadata struct {
 }
 
 func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
+
 	token, err := verifyToken(c)
+
 	if err != nil {
 		return nil, err
 	}
@@ -47,10 +49,11 @@ func extractToken(c *fiber.Ctx) string {
 	//Normally Authorization HTTP header.
 	onlyToken := strings.Split(bearToken, " ")
 	if len(onlyToken) == 2 {
+
 		return onlyToken[1]
 	}
 
-	return ""
+	return onlyToken[0]
 }
 
 func verifyToken(c *fiber.Ctx) (*jwt.Token, error) {
