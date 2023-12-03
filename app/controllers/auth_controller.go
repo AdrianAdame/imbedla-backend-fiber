@@ -182,6 +182,8 @@ func UserSignIn(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error": false,
 		"msg":   nil,
+		"user" : foundedUser.Firstname + " " + foundedUser.Lastname,
+		"id" : foundedUser.ID.String(),
 		"tokens": fiber.Map{
 			"access":  tokens.Access,
 			"refresh": tokens.Refresh,
