@@ -31,3 +31,25 @@ CREATE TABLE tokens (
     refresh_token VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+--- Rooms Table
+CREATE TABLE rooms (
+    id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    name VARCHAR(255) NOT NULL,
+    color VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP NULL,
+	type VARCHAR(255) NOT NULL
+);
+
+--- Rooms Table
+CREATE TABLE plants (
+    id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    room_id UUID REFERENCES rooms(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP NULL,
+	module_information json NULL,
+	module_specs json NULL
+);
