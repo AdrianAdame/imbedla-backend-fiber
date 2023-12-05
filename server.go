@@ -1,13 +1,27 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/configs"
+	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/middleware"
+	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/routes"
+	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
+)
 
 func main() {
-    app := fiber.New()
+	godotenv.Load()
 
-    app.Get("/", func(c *fiber.Ctx) error {
-        return c.SendString("Hello, World!")
-    })
+	config := configs.FiberConfig()
+	app := fiber.New(config)
 
-    app.Listen(":3000")
+	// Middleware
+	middleware.FiberMiddleware(app)
+
+	// Endpoints route
+	routes.PublicRoutes(app)
+	routes.PrivateRoutes(app)
+	routes.SwaggerRoute(app)
+	routes.NotFoundRoute(app)
+
+	app.Listen(":3000")
 }
