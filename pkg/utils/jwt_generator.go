@@ -20,8 +20,6 @@ type Tokens struct {
 func GenerateNewToken(id string, credentials []string) (*Tokens, error) {
 	accessToken, err := generateNewAccessToken(id, credentials)
 
-	fmt.Println(accessToken)
-
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +50,6 @@ func generateNewAccessToken(id string, credentials []string) (string, error) {
 	// }
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	fmt.Println(secret)
 
 	t, err := token.SignedString([]byte(secret))
 

@@ -7,7 +7,7 @@ import (
 )
 
 type Room struct {
-	ID        uuid.UUID `db:"id" json:"id" validate:"required,uuid"`
+	ID        uuid.UUID `db:"id" json:"id"`
 	UserId    uuid.UUID `db:"user_id" json:"user_id" validate:"required,uuid"`
 	Name      string    `db:"name" json:"name" validate:"required,lte=255"`
 	Color     string    `db:"color" json:"color" validate:"required,lte=255"`

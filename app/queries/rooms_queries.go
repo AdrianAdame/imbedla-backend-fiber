@@ -10,7 +10,7 @@ type RoomQueries struct {
 	*sqlx.DB
 }
 
-func (q *RoomQueries) getRoomById(id uuid.UUID) (models.Room, error) {
+func (q *RoomQueries) GetRoomById(id uuid.UUID) (models.Room, error) {
 	room := models.Room{}
 	query := `SELECT * FROM rooms WHERE id = $1`
 	err := q.Get(&room, query, id)
@@ -22,20 +22,20 @@ func (q *RoomQueries) getRoomById(id uuid.UUID) (models.Room, error) {
 	return room, nil
 }
 
-func (q *RoomQueries) getRoomsByUserId(userId uuid.UUID) (models.Room, error) {
-	room := models.Room{}
+func (q *RoomQueries) GetRoomsByUserId(userId uuid.UUID) ([]models.Room, error) {
+	rooms := []models.Room{}
 	query := `SELECT * FROM rooms WHERE user_id = $1`
-	err := q.Get(&room, query, userId)
+	err := q.Select(&rooms, query, userId)
 
 	if err != nil {
-		return room, err
+		return rooms, err
 	}
 
-	return room, nil
+	return rooms, nil
 }
 
-func (q *RoomQueries) createRoom(r *models.Room) error {
-	query := `SELECT * FROM rooms WHERE id = $1`
+func (q *RoomQueries) CreateRoom(r *models.Room) error {
+	query := `INSERT INTO rooms VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := q.Exec(
 		query,
