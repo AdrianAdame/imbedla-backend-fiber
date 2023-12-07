@@ -11,14 +11,14 @@ import (
 )
 
 func GetAllRoomsByUser (c *fiber.Ctx) error {
-	user := &models.RoomUser{}
-
-	if err := c.BodyParser(user); err != nil {
+	if err := c.Params("userId"); err == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
-			"msg" : err.Error(),
+			"msg" : err,
 		})
 	}
+
+	userId, _ := uuid.Parse(c.Params("userId"))
 
 	db, err := database.OpenDBConnection()
 
@@ -29,7 +29,7 @@ func GetAllRoomsByUser (c *fiber.Ctx) error {
 		})
 	}
 
-	foundedRooms, err := db.GetRoomsByUserId(user.ID)
+	foundedRooms, err := db.GetRoomsByUserId(userId)
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
