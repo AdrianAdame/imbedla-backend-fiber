@@ -24,7 +24,7 @@ func (q *RoomQueries) GetRoomById(id uuid.UUID) (models.Room, error) {
 
 func (q *RoomQueries) GetRoomsByUserId(userId uuid.UUID) ([]models.Room, error) {
 	rooms := []models.Room{}
-	query := `SELECT * FROM rooms WHERE user_id = $1`
+	query := `SELECT * FROM rooms WHERE user_id = $1 ORDER BY updated_at DESC`
 	err := q.Select(&rooms, query, userId)
 
 	if err != nil {
@@ -48,5 +48,36 @@ func (q *RoomQueries) CreateRoom(r *models.Room) error {
 
 
 	return nil
+}
+
+func (q *RoomQueries) EditRoom(r *models.Room) error {
+	query := `UPDATE rooms SET name = $1, color = $2, updated_at = $3, type = $4 WHERE id = $5`
+
+	_, err := q.Exec(
+		query,
+		r.Name,
+		r.Color,
+		r.UpdatedAt,
+		r.Type,
+		r.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (q *RoomQueries) DeleteRoom(id uuid.UUID) error {
+	query := `DELETE FROM rooms WHERE id = $1`
+
+	_, err := q.Exec(query,id)
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 

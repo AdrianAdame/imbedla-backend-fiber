@@ -17,7 +17,9 @@ func PrivateRoutes(a *fiber.App) {
 	/** User Rooms Routes */
 	route.Get("/rooms/user/:userId", middleware.JWTProtected(), controllers.GetAllRoomsByUser)
 	route.Get("/rooms/:id", middleware.JWTProtected(), controllers.GetRoomById)
-	route.Post("/rooms", middleware.JWTProtected(), controllers.CreateRoom)
-	//Delete room
-	//Update room
+	route.Post("/rooms", middleware.JWTProtected(), controllers.CreateRoomByUserId)
+	route.Put("/rooms", middleware.JWTProtected(), controllers.UpdateRoomById)
+	route.Delete("/rooms", middleware.JWTProtected(), controllers.DeleteRoomById)
+
+	/** User plants Routes */
 }

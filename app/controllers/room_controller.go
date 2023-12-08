@@ -79,7 +79,7 @@ func GetRoomById (c *fiber.Ctx) error {
 	})
 }
 
-func CreateRoom ( c *fiber.Ctx) error {
+func CreateRoomByUserId ( c *fiber.Ctx) error {
 	room := &models.Room{}
 
 	if err := c.BodyParser(room); err != nil {
@@ -135,5 +135,127 @@ func CreateRoom ( c *fiber.Ctx) error {
 		"error" : false,
 		"msg" : "created",
 		"room" : roomTemp,
+	})
+}
+
+func UpdateRoomById (c *fiber.Ctx) error {
+	room := &models.UpdateRoom{}
+
+	if err := c.BodyParser(room); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	validate := utils.NewValidator()
+
+	if err := validate.Struct(room); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error" : true,
+			"msg" : utils.ValidatorError(err),
+		})
+	}
+
+	db, err := database.OpenDBConnection()
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	foundedRoom, err := db.GetRoomById(room.ID)
+
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	if room.Name != "" {
+		foundedRoom.Name = room.Name
+	}
+
+	if room.Color != "" {
+		foundedRoom.Color = room.Color
+	}
+
+	if room.Type != "" {
+		foundedRoom.Type = room.Type
+	}
+
+	foundedRoom.UpdatedAt = time.Now()
+
+	if err := validate.Struct(foundedRoom); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error" : true,
+			"msg" : utils.ValidatorError(err),
+		})
+	}
+
+	if err := db.EditRoom(&foundedRoom); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error" : false,
+		"msg" : "modified",
+		"room" : foundedRoom,
+	})
+}
+
+func DeleteRoomById (c *fiber.Ctx) error {
+	roomToDelete := &models.DeleteRoom{}
+
+	if err := c.BodyParser(roomToDelete); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	validate := utils.NewValidator()
+
+	if err := validate.Struct(roomToDelete); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error" : true,
+			"msg" : utils.ValidatorError(err),
+		})
+	}
+
+	db, err := database.OpenDBConnection()
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	_, err = db.GetRoomById(roomToDelete.ID)
+
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	if err := db.DeleteRoom(roomToDelete.ID); err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error" : true,
+			"msg" : err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error" : false,
+		"msg" : "deleted",
 	})
 }
