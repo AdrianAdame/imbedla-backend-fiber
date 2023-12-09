@@ -11,6 +11,7 @@ type Queries struct {
 	*queries.UserQueries
 	*queries.TokenQueries
 	*queries.RoomQueries
+	*queries.PlantQueries
 }
 
 // type DBInstances struct {
@@ -46,5 +47,6 @@ func OpenDBConnection() (*Queries, error) {
 		UserQueries:  &queries.UserQueries{DB: db},
 		TokenQueries: &queries.TokenQueries{DB: db},
 		RoomQueries: &queries.RoomQueries{DB: db},
+		PlantQueries: &queries.PlantQueries{DB: db},
 	}, nil
 }

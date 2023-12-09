@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
@@ -10,26 +12,27 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetAllRoomsByUser (c *fiber.Ctx) error {
-	if err := c.Params("userId"); err == "" {
+func GetAllPlantsByRoom (c *fiber.Ctx) error {
+	if err := c.Params("roomId"); err == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err,
 		})
 	}
 
-	userId, _ := uuid.Parse(c.Params("userId"))
-
 	db, err := database.OpenDBConnection()
 
 	if err != nil {
+		// Return status 500 and database error.
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
-	foundedRooms, err := db.GetRoomsByUserId(userId)
+	roomId, _ := uuid.Parse(c.Params("roomId"))
+
+	foundedPlants, err := db.GetAllPlantsByRoomId(roomId)
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -40,11 +43,11 @@ func GetAllRoomsByUser (c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"error" : false,
-		"data" : foundedRooms,
+		"data" : foundedPlants,
 	})
 }
 
-func GetRoomById (c *fiber.Ctx) error {
+func GetPlantById (c *fiber.Ctx) error {
 	if err := c.Params("id"); err == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
@@ -62,27 +65,27 @@ func GetRoomById (c *fiber.Ctx) error {
 		})
 	}
 
-	roomId, _ := uuid.Parse(c.Params("id"))
-
-	room, err := db.GetRoomById(roomId)
+	plantId, _ := uuid.Parse(c.Params("id"))
+	
+	plantRow, err := db.GetPlantById(plantId)
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": true,
-			"msg":   "room with the given id was not found",
+			"msg":   "plant with the given id was not found",
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"error" : false,
-		"room" : room,
+		"room" : plantRow,
 	})
 }
 
-func CreateNewRoomByUserId ( c *fiber.Ctx) error {
-	room := &models.Room{}
+func CreateNewPlant (c *fiber.Ctx) error {
+	plantH := &models.PlantH{}
 
-	if err := c.BodyParser(room); err != nil {
+	if err := c.BodyParser(plantH); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err.Error(),
@@ -91,12 +94,15 @@ func CreateNewRoomByUserId ( c *fiber.Ctx) error {
 
 	validate := utils.NewValidator()
 
-	if err := validate.Struct(room); err != nil {
+	if err := validate.Struct(plantH); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : utils.ValidatorError(err),
 		})
 	}
+
+	json.Unmarshal(plantH.ModuleInformation, &plantH.ModuleInformation)
+	json.Unmarshal(plantH.ModuleSpecs, &plantH.ModuleSpecs)
 
 	db, err := database.OpenDBConnection()
 
@@ -107,24 +113,26 @@ func CreateNewRoomByUserId ( c *fiber.Ctx) error {
 		})
 	}
 
-	roomTemp := &models.Room{}
+	record := &models.PlantD{}
 
-	roomTemp.ID = uuid.New()
-	roomTemp.CreatedAt = time.Now()
-	roomTemp.UpdatedAt = time.Now()
-	roomTemp.Name = room.Name
-	roomTemp.Color = room.Color
-	roomTemp.Type = room.Type
-	roomTemp.UserId = room.UserId
+	record.ID = uuid.New()
+	record.UserId = plantH.UserId
+	record.RoomId = plantH.RoomId
+	record.Name = plantH.Name
+	record.RefPlant = plantH.RefPlant
+	record.CreatedAt = time.Now()
+	record.UpdatedAt = time.Now()
+	record.ModuleInformation = string(plantH.ModuleInformation)
+	record.ModuleSpecs = string(plantH.ModuleSpecs)
 
-	if err := validate.Struct(roomTemp); err != nil {
+	if err := validate.Struct(record); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : utils.ValidatorError(err),
 		})
 	}
 
-	if err := db.CreateRoom(roomTemp); err != nil {
+	if err := db.CreatePlant(record); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err.Error(),
@@ -134,14 +142,14 @@ func CreateNewRoomByUserId ( c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error" : false,
 		"msg" : "created",
-		"room" : roomTemp,
+		"plant" : record,
 	})
 }
 
-func UpdateRoomById (c *fiber.Ctx) error {
-	room := &models.UpdateRoom{}
+func UpdatePlantById (c *fiber.Ctx) error {
+	plant := &models.UpdatePlantH{}
 
-	if err := c.BodyParser(room); err != nil {
+	if err := c.BodyParser(plant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err.Error(),
@@ -150,7 +158,7 @@ func UpdateRoomById (c *fiber.Ctx) error {
 
 	validate := utils.NewValidator()
 
-	if err := validate.Struct(room); err != nil {
+	if err := validate.Struct(plant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : utils.ValidatorError(err),
@@ -166,7 +174,7 @@ func UpdateRoomById (c *fiber.Ctx) error {
 		})
 	}
 
-	foundedRoom, err := db.GetRoomById(room.ID)
+	foundedPlant, err := db.GetPlantById(plant.ID)
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -175,28 +183,35 @@ func UpdateRoomById (c *fiber.Ctx) error {
 		})
 	}
 
-	if room.Name != "" {
-		foundedRoom.Name = room.Name
+
+	if plant.Name != "" {
+		foundedPlant.Name = plant.Name
 	}
 
-	if room.Color != "" {
-		foundedRoom.Color = room.Color
+	if plant.ModuleInformation != nil {
+		json.Unmarshal(plant.ModuleInformation, &plant.ModuleInformation)
+
+		foundedPlant.ModuleInformation = string(plant.ModuleInformation)
 	}
 
-	if room.Type != "" {
-		foundedRoom.Type = room.Type
+	if plant.ModuleSpecs != nil {
+		json.Unmarshal(plant.ModuleSpecs, &plant.ModuleSpecs)
+
+		foundedPlant.ModuleSpecs = string(plant.ModuleSpecs)
 	}
 
-	foundedRoom.UpdatedAt = time.Now()
+	foundedPlant.UpdatedAt = time.Now()
 
-	if err := validate.Struct(foundedRoom); err != nil {
+	fmt.Println(foundedPlant)
+
+	if err := validate.Struct(foundedPlant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : utils.ValidatorError(err),
 		})
 	}
 
-	if err := db.EditRoom(&foundedRoom); err != nil {
+	if err := db.EditPlant(&foundedPlant); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err.Error(),
@@ -206,14 +221,14 @@ func UpdateRoomById (c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error" : false,
 		"msg" : "modified",
-		"room" : foundedRoom,
+		"plant" : foundedPlant,
 	})
 }
 
-func DeleteRoomById (c *fiber.Ctx) error {
-	roomToDelete := &models.DeleteRoom{}
+func DeletePlantById (c *fiber.Ctx) error {
+	plantToDelete := &models.DeletePlant{}
 
-	if err := c.BodyParser(roomToDelete); err != nil {
+	if err := c.BodyParser(plantToDelete); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err.Error(),
@@ -222,7 +237,7 @@ func DeleteRoomById (c *fiber.Ctx) error {
 
 	validate := utils.NewValidator()
 
-	if err := validate.Struct(roomToDelete); err != nil {
+	if err := validate.Struct(plantToDelete); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error" : true,
 			"msg" : utils.ValidatorError(err),
@@ -238,7 +253,7 @@ func DeleteRoomById (c *fiber.Ctx) error {
 		})
 	}
 
-	_, err = db.GetRoomById(roomToDelete.ID)
+	_, err = db.GetPlantById(plantToDelete.ID)
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -247,7 +262,7 @@ func DeleteRoomById (c *fiber.Ctx) error {
 		})
 	}
 
-	if err := db.DeleteRoom(roomToDelete.ID); err != nil {
+	if err := db.DeletePlant(plantToDelete.ID); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error" : true,
 			"msg" : err.Error(),
