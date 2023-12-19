@@ -12,7 +12,8 @@ type RoomQueries struct {
 
 func (q *RoomQueries) GetRoomById(id uuid.UUID) (models.Room, error) {
 	room := models.Room{}
-	query := `SELECT * FROM rooms WHERE id = $1`
+	query := `SELECT * FROM rooms WHERE id = $1
+	`
 	err := q.Get(&room, query, id)
 
 	if err != nil {
@@ -46,7 +47,6 @@ func (q *RoomQueries) CreateRoom(r *models.Room) error {
 		return err
 	}
 
-
 	return nil
 }
 
@@ -72,7 +72,7 @@ func (q *RoomQueries) EditRoom(r *models.Room) error {
 func (q *RoomQueries) DeleteRoom(id uuid.UUID) error {
 	query := `DELETE FROM rooms WHERE id = $1`
 
-	_, err := q.Exec(query,id)
+	_, err := q.Exec(query, id)
 
 	if err != nil {
 		return err
@@ -80,4 +80,3 @@ func (q *RoomQueries) DeleteRoom(id uuid.UUID) error {
 
 	return err
 }
-

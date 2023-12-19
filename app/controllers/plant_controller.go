@@ -12,11 +12,11 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetAllPlantsByRoom (c *fiber.Ctx) error {
+func GetAllPlantsByRoom(c *fiber.Ctx) error {
 	if err := c.Params("roomId"); err == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err,
+			"error": true,
+			"msg":   err,
 		})
 	}
 
@@ -36,22 +36,22 @@ func GetAllPlantsByRoom (c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"error" : false,
-		"data" : foundedPlants,
+		"error": false,
+		"data":  foundedPlants,
 	})
 }
 
-func GetPlantById (c *fiber.Ctx) error {
+func GetPlantById(c *fiber.Ctx) error {
 	if err := c.Params("id"); err == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err,
+			"error": true,
+			"msg":   err,
 		})
 	}
 
@@ -66,7 +66,7 @@ func GetPlantById (c *fiber.Ctx) error {
 	}
 
 	plantId, _ := uuid.Parse(c.Params("id"))
-	
+
 	plantRow, err := db.GetPlantById(plantId)
 
 	if err != nil {
@@ -77,18 +77,18 @@ func GetPlantById (c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"error" : false,
-		"room" : plantRow,
+		"error": false,
+		"room":  plantRow,
 	})
 }
 
-func CreateNewPlant (c *fiber.Ctx) error {
+func CreateNewPlant(c *fiber.Ctx) error {
 	plantH := &models.PlantH{}
 
 	if err := c.BodyParser(plantH); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -96,8 +96,8 @@ func CreateNewPlant (c *fiber.Ctx) error {
 
 	if err := validate.Struct(plantH); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : utils.ValidatorError(err),
+			"error": true,
+			"msg":   utils.ValidatorError(err),
 		})
 	}
 
@@ -108,8 +108,8 @@ func CreateNewPlant (c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -127,32 +127,32 @@ func CreateNewPlant (c *fiber.Ctx) error {
 
 	if err := validate.Struct(record); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : utils.ValidatorError(err),
+			"error": true,
+			"msg":   utils.ValidatorError(err),
 		})
 	}
 
 	if err := db.CreatePlant(record); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"error" : false,
-		"msg" : "created",
-		"plant" : record,
+		"error": false,
+		"msg":   "created",
+		"plant": record,
 	})
 }
 
-func UpdatePlantById (c *fiber.Ctx) error {
+func UpdatePlantById(c *fiber.Ctx) error {
 	plant := &models.UpdatePlantH{}
 
 	if err := c.BodyParser(plant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -160,8 +160,8 @@ func UpdatePlantById (c *fiber.Ctx) error {
 
 	if err := validate.Struct(plant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : utils.ValidatorError(err),
+			"error": true,
+			"msg":   utils.ValidatorError(err),
 		})
 	}
 
@@ -169,8 +169,8 @@ func UpdatePlantById (c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -178,11 +178,10 @@ func UpdatePlantById (c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
-
 
 	if plant.Name != "" {
 		foundedPlant.Name = plant.Name
@@ -206,32 +205,32 @@ func UpdatePlantById (c *fiber.Ctx) error {
 
 	if err := validate.Struct(foundedPlant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : utils.ValidatorError(err),
+			"error": true,
+			"msg":   utils.ValidatorError(err),
 		})
 	}
 
 	if err := db.EditPlant(&foundedPlant); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"error" : false,
-		"msg" : "modified",
-		"plant" : foundedPlant,
+		"error": false,
+		"msg":   "modified",
+		"plant": foundedPlant,
 	})
 }
 
-func DeletePlantById (c *fiber.Ctx) error {
+func DeletePlantById(c *fiber.Ctx) error {
 	plantToDelete := &models.DeletePlant{}
 
 	if err := c.BodyParser(plantToDelete); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -239,8 +238,8 @@ func DeletePlantById (c *fiber.Ctx) error {
 
 	if err := validate.Struct(plantToDelete); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error" : true,
-			"msg" : utils.ValidatorError(err),
+			"error": true,
+			"msg":   utils.ValidatorError(err),
 		})
 	}
 
@@ -248,8 +247,8 @@ func DeletePlantById (c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -257,20 +256,20 @@ func DeletePlantById (c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
 	if err := db.DeletePlant(plantToDelete.ID); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error" : true,
-			"msg" : err.Error(),
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"error" : false,
-		"msg" : "deleted",
+		"error": false,
+		"msg":   "deleted",
 	})
 }

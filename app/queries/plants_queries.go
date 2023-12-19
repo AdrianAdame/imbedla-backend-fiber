@@ -1,6 +1,8 @@
 package queries
 
 import (
+	"fmt"
+
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -31,8 +33,6 @@ func (q *PlantQueries) GetPlantById(id uuid.UUID) (models.PlantD, error) {
 		return plant, err
 	}
 
-
-
 	return plant, nil
 }
 
@@ -43,6 +43,8 @@ func (q *PlantQueries) CreatePlant(p *models.PlantD) error {
 		query,
 		p.ID, p.UserId, p.RoomId, p.Name, p.RefPlant, p.CreatedAt, p.UpdatedAt, p.ModuleInformation, p.ModuleSpecs,
 	)
+
+	fmt.Println(p)
 
 	if err != nil {
 		return err
@@ -73,7 +75,7 @@ func (q *PlantQueries) EditPlant(r *models.PlantD) error {
 func (q *RoomQueries) DeletePlant(id uuid.UUID) error {
 	query := `DELETE FROM plants WHERE id = $1`
 
-	_, err := q.Exec(query,id)
+	_, err := q.Exec(query, id)
 
 	if err != nil {
 		return err

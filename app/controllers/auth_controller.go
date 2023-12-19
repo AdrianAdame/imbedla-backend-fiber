@@ -1,24 +1,18 @@
 package controllers
 
 import (
-	"image"
 	_ "image/jpeg"
-	"context"
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
 	"github.com/AdrianAdame/imbedla-backend-fiber/pkg/utils"
 	"github.com/AdrianAdame/imbedla-backend-fiber/platform/database"
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
 func UserSignUp(c *fiber.Ctx) error {
-	cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_API_URL"))
+	// cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_API_URL"))
 
 	// Create a new user auth struct
 	signUp := &models.SignUp{}
@@ -48,12 +42,11 @@ func UserSignUp(c *fiber.Ctx) error {
 
 	//ESTA TOMA EL ARCHIVO DEL JSON SI ES QUE TIENE
 
-	file, err := c.FormFile("profile_img")
+	// file, err := c.FormFile("profile_img")
 
-	if err != nil {
-		fmt.Println("No profile image set!")
-	}
-
+	// if err != nil {
+	// 	fmt.Println("No profile image set!")
+	// }
 
 	// Create database connection.
 	db, err := database.OpenDBConnection()
@@ -97,7 +90,7 @@ func UserSignUp(c *fiber.Ctx) error {
 			"msg":   utils.ValidatorError(err),
 		})
 	}
-	
+
 	// var ctx = context.Background()
 
 	// resp, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{})
@@ -111,7 +104,7 @@ func UserSignUp(c *fiber.Ctx) error {
 
 	//este url se deberia guardar en la BD para accesar a la imagen
 	//fmt.Println(resp.SecureURL)
-	
+
 	//Create a new user with validated data
 	if err := db.CreateUser(user); err != nil {
 
@@ -121,7 +114,6 @@ func UserSignUp(c *fiber.Ctx) error {
 			"msg":   err.Error(),
 		})
 	}
-
 
 	// Delete password hash field from JSON view.
 	user.PasswordHash = ""
@@ -216,8 +208,8 @@ func UserSignIn(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error": false,
 		"msg":   nil,
-		"user" : foundedUser.Firstname + " " + foundedUser.Lastname,
-		"id" : foundedUser.ID.String(),
+		"user":  foundedUser.Firstname + " " + foundedUser.Lastname,
+		"id":    foundedUser.ID.String(),
 		"tokens": fiber.Map{
 			"access":  tokens.Access,
 			"refresh": tokens.Refresh,
