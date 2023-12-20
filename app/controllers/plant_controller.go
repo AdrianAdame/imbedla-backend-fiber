@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
@@ -198,6 +199,8 @@ func UpdatePlantById(c *fiber.Ctx) error {
 
 		foundedPlant.ModuleSpecs = string(plant.ModuleSpecs)
 	}
+
+	fmt.Println(plant.Favorite)
 
 	foundedPlant.UpdatedAt = time.Now()
 	foundedPlant.Favorite = plant.Favorite

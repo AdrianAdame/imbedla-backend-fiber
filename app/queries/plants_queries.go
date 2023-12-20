@@ -37,7 +37,7 @@ func (q *PlantQueries) GetPlantById(id uuid.UUID) (models.PlantD, error) {
 }
 
 func (q *PlantQueries) CreatePlant(p *models.PlantD) error {
-	query := `INSERT INTO plants VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	query := `INSERT INTO plants VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	_, err := q.Exec(
 		query,
@@ -54,7 +54,7 @@ func (q *PlantQueries) CreatePlant(p *models.PlantD) error {
 }
 
 func (q *PlantQueries) EditPlant(r *models.PlantD) error {
-	query := `UPDATE plants SET name = $1, module_information = $2, module_specs = $3, updated_at = $4 favorite = $5 WHERE id = $6`
+	query := `UPDATE plants SET name = $1, module_information = $2, module_specs = $3, updated_at = $4, favorite = $5 WHERE id = $6`
 
 	_, err := q.Exec(
 		query,
