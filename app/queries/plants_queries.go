@@ -54,7 +54,7 @@ func (q *PlantQueries) CreatePlant(p *models.PlantD) error {
 }
 
 func (q *PlantQueries) EditPlant(r *models.PlantD) error {
-	query := `UPDATE plants SET name = $1, module_information = $2, module_specs = $3, updated_at = $4 WHERE id = $5`
+	query := `UPDATE plants SET name = $1, module_information = $2, module_specs = $3, updated_at = $4 favorite = $5 WHERE id = $6`
 
 	_, err := q.Exec(
 		query,
@@ -62,6 +62,7 @@ func (q *PlantQueries) EditPlant(r *models.PlantD) error {
 		r.ModuleInformation,
 		r.ModuleSpecs,
 		r.UpdatedAt,
+		r.Favorite,
 		r.ID,
 	)
 

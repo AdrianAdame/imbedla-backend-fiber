@@ -17,6 +17,7 @@ type PlantH struct {
 	UpdatedAt         time.Time       `db:"updated_at" json:"updated_at"`
 	ModuleInformation json.RawMessage `db:"module_information" json:"module_information"`
 	ModuleSpecs       json.RawMessage `db:"module_specs" json:"module_specs"`
+	Favorite          bool            `db:"favorite" json:"favorite"`
 }
 
 type PlantD struct {
@@ -29,6 +30,7 @@ type PlantD struct {
 	UpdatedAt         time.Time `db:"updated_at" json:"updated_at"`
 	ModuleInformation string    `db:"module_information" json:"module_information"`
 	ModuleSpecs       string    `db:"module_specs" json:"module_specs"`
+	Favorite          bool      `db:"favorite" json:"favorite"`
 }
 
 type DeletePlant struct {
@@ -40,4 +42,5 @@ type UpdatePlantH struct {
 	Name              string          `json:"name" validate:"lte=255"`
 	ModuleInformation json.RawMessage `json:"module_information"`
 	ModuleSpecs       json.RawMessage `json:"module_specs"`
+	Favorite          bool            `json:"favorite"`
 }

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
@@ -124,6 +123,7 @@ func CreateNewPlant(c *fiber.Ctx) error {
 	record.UpdatedAt = time.Now()
 	record.ModuleInformation = string(plantH.ModuleInformation)
 	record.ModuleSpecs = string(plantH.ModuleSpecs)
+	record.Favorite = false
 
 	if err := validate.Struct(record); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -200,8 +200,7 @@ func UpdatePlantById(c *fiber.Ctx) error {
 	}
 
 	foundedPlant.UpdatedAt = time.Now()
-
-	fmt.Println(foundedPlant)
+	foundedPlant.Favorite = plant.Favorite
 
 	if err := validate.Struct(foundedPlant); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
