@@ -12,8 +12,7 @@ type RoomQueries struct {
 
 func (q *RoomQueries) GetRoomById(id uuid.UUID) (models.Room, error) {
 	room := models.Room{}
-	query := `SELECT * FROM rooms WHERE id = $1
-	`
+	query := `SELECT r.*, COUNT(p.id) as total_plants, COALESCE((SELECT name FROM plants WHERE room_id = r.id ORDER BY created_at DESC LIMIT 1), '') AS latest_plant_name FROM rooms r LEFT JOIN plants p ON r.id = p.room_id WHERE r.id = $1 GROUP BY r.id ORDER BY r.updated_at DESC`
 	err := q.Get(&room, query, id)
 
 	if err != nil {
