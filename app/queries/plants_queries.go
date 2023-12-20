@@ -41,7 +41,7 @@ func (q *PlantQueries) CreatePlant(p *models.PlantD) error {
 
 	_, err := q.Exec(
 		query,
-		p.ID, p.UserId, p.RoomId, p.Name, p.RefPlant, p.CreatedAt, p.UpdatedAt, p.ModuleInformation, p.ModuleSpecs,
+		p.ID, p.UserId, p.RoomId, p.Name, p.RefPlant, p.CreatedAt, p.UpdatedAt, p.ModuleInformation, p.ModuleSpecs, p.Favorite,
 	)
 
 	fmt.Println(p)
