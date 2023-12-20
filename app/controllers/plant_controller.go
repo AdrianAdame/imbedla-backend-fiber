@@ -272,3 +272,38 @@ func DeletePlantById(c *fiber.Ctx) error {
 		"msg":   "deleted",
 	})
 }
+
+func GetAllPlantsByUser(c *fiber.Ctx) error {
+	if err := c.Params("userId"); err == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   err,
+		})
+	}
+
+	db, err := database.OpenDBConnection()
+
+	if err != nil {
+		// Return status 500 and database error.
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	userId, _ := uuid.Parse(c.Params("userId"))
+
+	foundedPlants, err := db.GetFavoritePlantsByUserId(userId)
+
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error": false,
+		"data":  foundedPlants,
+	})
+}

@@ -73,7 +73,7 @@ func (q *PlantQueries) EditPlant(r *models.PlantD) error {
 	return err
 }
 
-func (q *RoomQueries) DeletePlant(id uuid.UUID) error {
+func (q *PlantQueries) DeletePlant(id uuid.UUID) error {
 	query := `DELETE FROM plants WHERE id = $1`
 
 	_, err := q.Exec(query, id)
@@ -83,4 +83,16 @@ func (q *RoomQueries) DeletePlant(id uuid.UUID) error {
 	}
 
 	return err
+}
+
+func (q *PlantQueries) GetFavoritePlantsByUserId(userId uuid.UUID) ([]models.PlantD, error) {
+	plants := []models.PlantD{}
+	query := `SELECT * FROM plants WHERE user_id = $1 AND favorite = true ORDER BY updated_at DESC`
+	err := q.Select(&plants, query, userId)
+
+	if err != nil {
+		return plants, err
+	}
+
+	return plants, nil
 }
