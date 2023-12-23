@@ -69,7 +69,7 @@ func GetRoomById (c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": true,
-			"msg":   "user with the given email is not found",
+			"msg":   "room with the given id was not found",
 		})
 	}
 
@@ -79,7 +79,7 @@ func GetRoomById (c *fiber.Ctx) error {
 	})
 }
 
-func CreateRoomByUserId ( c *fiber.Ctx) error {
+func CreateNewRoomByUserId ( c *fiber.Ctx) error {
 	room := &models.Room{}
 
 	if err := c.BodyParser(room); err != nil {

@@ -26,7 +26,8 @@ CREATE INDEX active_users ON users (id) WHERE user_status = 1;
 --- Tokens Table
 CREATE TABLE tokens (
     token_id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    id UUID NOT NULL,
+    FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE NO ACTION,
     access_token VARCHAR(255) DEFAULT NULL,
     refresh_token VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -35,7 +36,8 @@ CREATE TABLE tokens (
 --- Rooms Table
 CREATE TABLE rooms (
     id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    user_id UUID NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE NO ACTION,
     name VARCHAR(255) NOT NULL,
     color VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -46,8 +48,12 @@ CREATE TABLE rooms (
 --- Rooms Table
 CREATE TABLE plants (
     id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+	user_id UUID NOT NULL,
+	room_id UUID NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    name VARCHAR(255) NOT NULL,
+    ref_plant VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NULL,
 	module_information json NULL,

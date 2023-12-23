@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	_ "image/jpeg"
 	"time"
 
 	"github.com/AdrianAdame/imbedla-backend-fiber/app/models"
@@ -11,6 +12,8 @@ import (
 )
 
 func UserSignUp(c *fiber.Ctx) error {
+	// cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_API_URL"))
+
 	// Create a new user auth struct
 	signUp := &models.SignUp{}
 
@@ -36,6 +39,14 @@ func UserSignUp(c *fiber.Ctx) error {
 			"msg":   utils.ValidatorError(err),
 		})
 	}
+
+	//ESTA TOMA EL ARCHIVO DEL JSON SI ES QUE TIENE
+
+	// file, err := c.FormFile("profile_img")
+
+	// if err != nil {
+	// 	fmt.Println("No profile image set!")
+	// }
 
 	// Create database connection.
 	db, err := database.OpenDBConnection()
@@ -79,7 +90,22 @@ func UserSignUp(c *fiber.Ctx) error {
 			"msg":   utils.ValidatorError(err),
 		})
 	}
-	// Create a new user with validated data
+
+	// var ctx = context.Background()
+
+	// resp, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{})
+
+	// if err != nil {
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	// 		"error": true,
+	// 		"msg":   err.Error(),
+	// 	})
+	// }
+
+	//este url se deberia guardar en la BD para accesar a la imagen
+	//fmt.Println(resp.SecureURL)
+
+	//Create a new user with validated data
 	if err := db.CreateUser(user); err != nil {
 
 		// Return status 500 and create user process error.
@@ -182,8 +208,8 @@ func UserSignIn(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error": false,
 		"msg":   nil,
-		"user" : foundedUser.Firstname + " " + foundedUser.Lastname,
-		"id" : foundedUser.ID.String(),
+		"user":  foundedUser.Firstname + " " + foundedUser.Lastname,
+		"id":    foundedUser.ID.String(),
 		"tokens": fiber.Map{
 			"access":  tokens.Access,
 			"refresh": tokens.Refresh,
